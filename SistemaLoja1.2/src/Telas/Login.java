@@ -6,7 +6,12 @@ import camada_acesso_dados.ModuloConexaoBD;
 
 import javax.swing.JFrame;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
+
 import java.awt.Font;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+
 import javax.swing.JTextField;
 import javax.swing.JButton;
 import javax.swing.JPasswordField;
@@ -81,6 +86,14 @@ public class Login {
 		btn_login.setBounds(252, 169, 89, 23);
 		frmSSystem.getContentPane().add(btn_login);
 		
+		btn_login.addActionListener(new ActionListener() {
+			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				logar();		
+			}
+		});
+		
 		passwordField = new JPasswordField();
 		passwordField.setBounds(122, 114, 219, -18);
 		frmSSystem.getContentPane().add(passwordField);
@@ -99,15 +112,24 @@ public class Login {
 		String sql="select * from users where login=? and senha=?";
 		try {
 			//as linhas abaixo preparam a consulta ao bd em funcao do
-			//que foi digitado nos campos de preenchimento
+			//que foi digitado nos campos de preenchimento usuario e password
 			pst= conexao.prepareStatement(sql);
 			pst.setString(1, username.getText());
 			pst.setString(2, passwordField_1.getText()); //esta riscado por ser do tipo password
 			//a linha abaixo executa a query sql
 			rs=pst.executeQuery(); 
 			
-		} catch(Exception e){
+			if(rs.next()) { //se existir o usuario e password
+				PrincipalScreen principal= new PrincipalScreen();
+	//			principal.setVisible(true);
+				frmSSystem.setVisible(false);
+				conexao.close();
+			} else {
+				JOptionPane.showMessageDialog(null, "invalid user or password");
+			}
 			
+		} catch(Exception e){
+			JOptionPane.showMessageDialog(null,e);
 		}
 	}
 }
